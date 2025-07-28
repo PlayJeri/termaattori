@@ -31,22 +31,58 @@ func (e *Editor) handleNormalModeKey(k tcell.Key) {
 		e.AddLine()
 	case tcell.KeyEsc:
 		e.Mode = Normal
+	case tcell.KeyBackspace, tcell.KeyBackspace2:
+		e.RemoveChar()
+	}
+}
+
+func (e *Editor) RemoveChar() {
+	if e.CursorX > 0 {
+		line := e.GetCurLine()
+		line = slices.Delete(line, e.CursorX-1, e.CursorX)
+		e.Content[e.CursorY] = line
+		e.CursorX--
+		e.DirtyLine[e.CursorY] = struct{}{}
+	} else {
+		e.RemoveLine()
+	}
+}
+
+func (e *Editor) RemoveLine() {
+	if e.CursorY == 0 {
+		return
+	}
+	curY := e.CursorY
+	lineToDelete := e.GetCurLine()
+	e.MoveCursorY("up")
+	lineToJoin := e.GetCurLine()
+	e.CursorX = len(lineToJoin)
+	e.Content[e.CursorY] = append(lineToJoin, lineToDelete...)
+	e.Content = slices.Delete(e.Content, curY, curY+1)
+	for i := e.CursorY; i < len(e.Content); i++ {
+		e.DirtyLine[i] = struct{}{}
 	}
 }
 
 func (e *Editor) AddLine() {
-	e.Buffer.Content = slices.Insert(e.Buffer.Content, e.Buffer.CursorY+1, []rune{})
-	e.Buffer.CursorX = 0
-	e.Buffer.CursorY++
-	e.NeedsFullRedraw = true
+	if len(e.Content) == 0 {
+		e.Content = append(e.Content, []rune{})
+		e.CursorX = 0
+		e.MoveCursorY("down")
+		return
+	}
+	e.Content = slices.Insert(e.Content, e.CursorY+1, []rune{})
+	e.CursorX = 0
+	e.MoveCursorY("down")
 }
 
 func (e *Editor) handleInsertRune(r rune) {
-	if len(e.Buffer.Content) == 0 {
-		e.Buffer.Content = append(e.Buffer.Content, []rune{})
+	if len(e.Content) == 0 {
+		e.Content = append(e.Content, []rune{})
 	}
-	line := e.Buffer.Content[e.Buffer.CursorY]
-	line = append(line[:e.Buffer.CursorX], append([]rune{r}, line[e.Buffer.CursorX:]...)...)
-	e.Buffer.Content[e.Buffer.CursorY] = line
-	e.Buffer.CursorX++
+	line := e.Content[e.CursorY]
+	line = append(line[:e.CursorX], append([]rune{r}, line[e.CursorX:]...)...)
+	e.Content[e.CursorY] = line
+	e.CursorX++
+	e.DirtyLine[e.CursorY] = struct{}{}
 }

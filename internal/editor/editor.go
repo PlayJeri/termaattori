@@ -15,25 +15,28 @@ const (
 )
 
 type Editor struct {
-	Buffer          Buffer
-	Mode            Mode
-	NeedsFullRedraw bool
+	Buffer
+	Mode          Mode
+	Width, Height int
 }
 
 func NewEditor() *Editor {
 	return &Editor{
 		Buffer: Buffer{
-			Content: [][]rune{},
-			CursorX: 0,
-			CursorY: 0,
+			Content:   [][]rune{{}},
+			CursorX:   0,
+			CursorY:   0,
+			DirtyLine: make(map[int]struct{}),
+			ScrollY:   0,
 		},
-		Mode:            Normal,
-		NeedsFullRedraw: false,
+		Mode: Normal,
 	}
 }
 
 func (e *Editor) Run(s tcell.Screen, style tcell.Style) {
 	defer s.Fini()
+	e.Width, e.Height = s.Size()
+	e.DrawBuffer(s, style)
 	for {
 		// Update cursor
 		switch e.Mode {
@@ -42,10 +45,14 @@ func (e *Editor) Run(s tcell.Screen, style tcell.Style) {
 		case Insert:
 			s.SetCursorStyle(tcell.CursorStyleBlinkingBar)
 		}
-		s.ShowCursor(e.Buffer.CursorX, e.Buffer.CursorY)
+		s.ShowCursor(e.Buffer.CursorX, e.CursorY-e.ScrollY)
 
 		// Update screen
-		e.DrawBuffer(s, style)
+		if len(e.DirtyLine) > 0 {
+			e.DrawDirty(s, style)
+		} else {
+			e.DrawBuffer(s, style)
+		}
 		e.DrawStatusBar(s, style)
 		s.Show()
 
@@ -67,11 +74,6 @@ func (e *Editor) Run(s tcell.Screen, style tcell.Style) {
 			case Insert:
 				e.handleInsertMode(ev)
 			}
-		}
-
-		if e.NeedsFullRedraw {
-			s.Clear()
-			e.NeedsFullRedraw = false
 		}
 	}
 

@@ -56,14 +56,14 @@ func (e *Editor) MoveRight() {
 
 func (e *Editor) MoveUp() {
 	if e.Buffer.CursorY > 0 {
-		e.Buffer.CursorY--
+		e.MoveCursorY("up")
 		e.Buffer.CursorX = 0
 	}
 }
 
 func (e *Editor) MoveDown() {
 	if e.Buffer.CursorY+1 < len(e.Buffer.Content) {
-		e.Buffer.CursorY++
+		e.MoveCursorY("down")
 		e.Buffer.CursorX = 0
 	}
 }
