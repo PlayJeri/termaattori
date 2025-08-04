@@ -22,9 +22,12 @@ func (e *Editor) MoveCursorY(dir string) {
 }
 
 func (e *Editor) SetScrollY() {
+	visibleLines := max(e.Height-1, 1)
+
 	if e.CursorY < e.ScrollY {
 		e.ScrollY = e.CursorY
-	} else if e.CursorY >= e.ScrollY+e.Height {
-		e.ScrollY = e.CursorY - e.Height + 1
+	} else if e.CursorY >= e.ScrollY+visibleLines {
+		maxScroll := max(len(e.Content)-visibleLines, 0)
+		e.ScrollY = min(e.CursorY-visibleLines+1, maxScroll)
 	}
 }

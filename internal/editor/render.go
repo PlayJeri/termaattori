@@ -23,31 +23,18 @@ func (e *Editor) DrawDirty(s tcell.Screen, style tcell.Style) {
 }
 
 func (e *Editor) DrawBuffer(s tcell.Screen, style tcell.Style) {
-	if len(e.Content) < e.Height {
-		for y := range e.Content {
-			l := e.Content[y]
-			for x := 0; x < e.Width; x++ {
-				ch := ' '
-				if l != nil && x < len(l) {
-					ch = l[x]
-				}
-				s.SetContent(x, y, ch, nil, style)
+	usableHeight := e.Height - 1
+	start := e.ScrollY
+	end := min(start+usableHeight, len(e.Content))
+	for i := start; i < end; i++ {
+		line := e.Content[i]
+		y := i - start
+		for x := 0; x < e.Width; x++ {
+			ch := ' '
+			if x < len(line) {
+				ch = line[x]
 			}
-		}
-
-	} else {
-		start := e.ScrollY
-		end := min(start+e.Height, len(e.Content))
-		for i := start; i < end; i++ {
-			line := e.Content[i]
-			y := i - start
-			for x := 0; x < e.Width; x++ {
-				ch := ' '
-				if x < len(line) {
-					ch = line[x]
-				}
-				s.SetContent(x, y, ch, nil, style)
-			}
+			s.SetContent(x, y, ch, nil, style)
 		}
 	}
 }

@@ -43,26 +43,26 @@ func (e *Editor) handleNormalModeRune(r rune) {
 }
 
 func (e *Editor) MoveLeft() {
-	if e.Buffer.CursorX > 0 {
-		e.Buffer.CursorX--
+	if e.CursorX > 0 {
+		e.CursorX--
 	}
 }
 
 func (e *Editor) MoveRight() {
-	if e.Buffer.CursorX < e.CurLineLen() {
-		e.Buffer.CursorX++
+	if e.CursorX < e.CurLineLen() {
+		e.CursorX++
 	}
 }
 
 func (e *Editor) MoveUp() {
-	if e.Buffer.CursorY > 0 {
+	if e.CursorY > 0 {
 		e.MoveCursorY("up")
-		e.Buffer.CursorX = 0
+		e.CursorX = 0
 	}
 }
 
 func (e *Editor) MoveDown() {
-	if e.Buffer.CursorY+1 < len(e.Buffer.Content) {
+	if e.CursorY+1 < len(e.Content) {
 		e.MoveCursorY("down")
 		e.Buffer.CursorX = 0
 	}
