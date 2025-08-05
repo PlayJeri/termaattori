@@ -6,6 +6,12 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
+// Constants
+const (
+	GutterWidth     = 4
+	StatusBarHeight = 1
+)
+
 type Mode int
 
 const (
@@ -45,14 +51,13 @@ func (e *Editor) Run(s tcell.Screen, style tcell.Style) {
 		case Insert:
 			s.SetCursorStyle(tcell.CursorStyleBlinkingBar)
 		}
-		s.ShowCursor(e.Buffer.CursorX, e.CursorY-e.ScrollY)
+		s.ShowCursor(e.Buffer.CursorX+GutterWidth, e.CursorY-e.ScrollY)
 
 		// Update screen
 		if len(e.DirtyLine) > 0 {
 			e.DrawDirty(s, style)
-		} else {
-			e.DrawBuffer(s, style)
 		}
+		e.DrawGutter(s, style)
 		e.DrawStatusBar(s, style)
 		s.Show()
 
