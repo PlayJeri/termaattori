@@ -29,11 +29,10 @@ type Editor struct {
 func NewEditor() *Editor {
 	return &Editor{
 		Buffer: Buffer{
-			Content:   [][]rune{{}},
-			CursorX:   0,
-			CursorY:   0,
-			DirtyLine: make(map[int]struct{}),
-			ScrollY:   0,
+			Content: [][]rune{{}},
+			CursorX: 0,
+			CursorY: 0,
+			ScrollY: 0,
 		},
 		Mode: Normal,
 	}
@@ -54,9 +53,7 @@ func (e *Editor) Run(s tcell.Screen, style tcell.Style) {
 		s.ShowCursor(e.Buffer.CursorX+GutterWidth, e.CursorY-e.ScrollY)
 
 		// Update screen
-		if len(e.DirtyLine) > 0 {
-			e.DrawDirty(s, style)
-		}
+		e.DrawBuffer(s, style)
 		e.DrawGutter(s, style)
 		e.DrawStatusBar(s, style)
 		s.Show()

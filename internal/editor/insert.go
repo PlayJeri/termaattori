@@ -42,7 +42,6 @@ func (e *Editor) RemoveChar() {
 		line = slices.Delete(line, e.CursorX-1, e.CursorX)
 		e.Content[e.CursorY] = line
 		e.CursorX--
-		e.DirtyLine[e.CursorY] = struct{}{}
 	} else {
 		e.RemoveLine()
 	}
@@ -59,9 +58,6 @@ func (e *Editor) RemoveLine() {
 	e.CursorX = len(lineToJoin)
 	e.Content[e.CursorY] = append(lineToJoin, lineToDelete...)
 	e.Content = slices.Delete(e.Content, curY, curY+1)
-	for i := e.CursorY; i < len(e.Content); i++ {
-		e.DirtyLine[i] = struct{}{}
-	}
 }
 
 func (e *Editor) AddLine() {
@@ -84,5 +80,4 @@ func (e *Editor) handleInsertRune(r rune) {
 	line = append(line[:e.CursorX], append([]rune{r}, line[e.CursorX:]...)...)
 	e.Content[e.CursorY] = line
 	e.CursorX++
-	e.DirtyLine[e.CursorY] = struct{}{}
 }
