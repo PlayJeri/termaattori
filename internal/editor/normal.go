@@ -34,18 +34,48 @@ func (e *Editor) handleNormalModeRune(r rune) {
 		}
 	case 'h':
 		e.MoveLeft()
+	case 'H':
+		e.MoveLineStart()
 	case 'j':
 		e.MoveDown()
+	case 'J':
+		e.MoveFileEnd()
 	case 'k':
 		e.MoveUp()
+	case 'K':
+		e.MoveFileStart()
 	case 'l':
 		e.MoveRight()
+	case 'L':
+		e.MoveLineEnd()
 	case 'u':
 		e.Undo()
 	case 'U':
 		e.Redo()
 	}
 
+}
+
+func (e *Editor) MoveFileStart() {
+	e.CursorY = 0
+	if e.CursorX > e.CurLineLen() {
+		e.CursorX = e.CurLineLen()
+	}
+}
+
+func (e *Editor) MoveFileEnd() {
+	e.CursorY = len(e.Content) - 1
+	if e.CursorX > e.CurLineLen() {
+		e.CursorX = e.CurLineLen()
+	}
+}
+
+func (e *Editor) MoveLineStart() {
+	e.CursorX = 0
+}
+
+func (e *Editor) MoveLineEnd() {
+	e.CursorX = e.CurLineLen()
 }
 
 func (e *Editor) MoveLeft() {
