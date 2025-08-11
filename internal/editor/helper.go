@@ -5,7 +5,10 @@ func (e *Editor) CurLineLen() int {
 }
 
 func (e *Editor) GetCurLine() []rune {
-	return e.Buffer.Content[e.Buffer.CursorY]
+	line := e.Buffer.Content[e.Buffer.CursorY]
+	c := make([]rune, len(line))
+	copy(c, line)
+	return c
 }
 
 func (e *Editor) MoveCursorY(dir string) {
