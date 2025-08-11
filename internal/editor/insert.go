@@ -64,13 +64,9 @@ func (e *Editor) RemoveLine() {
 }
 
 func (e *Editor) AddLine() {
-	if len(e.Content) == 0 {
-		e.Content = append(e.Content, []rune{})
-		e.CursorX = 0
-		e.MoveCursorY("down")
-		return
-	}
-	e.Content = slices.Insert(e.Content, e.CursorY+1, []rune{})
+	contentToShift := append([]rune(nil), e.Content[e.CursorY][e.CursorX:]...)
+	e.Content[e.CursorY] = append([]rune(nil), e.Content[e.CursorY][:e.CursorX]...)
+	e.Content = slices.Insert(e.Content, e.CursorY+1, contentToShift)
 	e.CursorX = 0
 	e.MoveCursorY("down")
 }
