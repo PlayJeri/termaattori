@@ -1,6 +1,8 @@
 package editor
 
-import "github.com/gdamore/tcell/v2"
+import (
+	"github.com/gdamore/tcell/v2"
+)
 
 func (e *Editor) handleNormalMode(ev *tcell.EventKey) {
 	r, k, m := ev.Rune(), ev.Key(), ev.Modifiers()
@@ -24,9 +26,9 @@ func (e *Editor) handleNormalMode(ev *tcell.EventKey) {
 func (e *Editor) handleNormalModeRune(r rune) {
 	switch r {
 	case 'i':
-		e.Mode = Insert
+		e.ChangeMode(Insert)
 	case 'a':
-		e.Mode = Insert
+		e.ChangeMode(Insert)
 		if e.Buffer.CursorX < e.CurLineLen() {
 			e.Buffer.CursorX++
 		}
@@ -38,6 +40,10 @@ func (e *Editor) handleNormalModeRune(r rune) {
 		e.MoveUp()
 	case 'l':
 		e.MoveRight()
+	case 'u':
+		e.Undo()
+	case 'U':
+		e.Redo()
 	}
 
 }
@@ -65,5 +71,12 @@ func (e *Editor) MoveDown() {
 	if e.CursorY+1 < len(e.Content) {
 		e.MoveCursorY("down")
 		e.Buffer.CursorX = 0
+	}
+}
+
+func (e *Editor) ChangeMode(m Mode) {
+	e.Mode = m
+	if m == Insert {
+		e.SaveSnapshot()
 	}
 }

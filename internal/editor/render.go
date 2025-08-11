@@ -12,7 +12,6 @@ func (e *Editor) DrawBuffer(s tcell.Screen, style tcell.Style) {
 	bufHeight := e.Height - StatusBarHeight
 
 	start := e.ScrollY
-	// end := min(start+bufHeight, len(e.Content))
 	end := start + bufHeight
 	for i := start; i < end; i++ {
 		var line []rune
@@ -20,7 +19,7 @@ func (e *Editor) DrawBuffer(s tcell.Screen, style tcell.Style) {
 			line = e.Content[i]
 		}
 		y := i - start
-		for x := 0; x < bufWidth; x++ {
+		for x := range bufWidth {
 			ch := ' '
 			if x < len(line) {
 				ch = line[x]

@@ -29,10 +29,12 @@ type Editor struct {
 func NewEditor() *Editor {
 	return &Editor{
 		Buffer: Buffer{
-			Content: [][]rune{{}},
-			CursorX: 0,
-			CursorY: 0,
-			ScrollY: 0,
+			Content:   [][]rune{{}},
+			CursorX:   0,
+			CursorY:   0,
+			ScrollY:   0,
+			UndoStack: []Snapshot{},
+			RedoStack: []Snapshot{},
 		},
 		Mode: Normal,
 	}

@@ -15,6 +15,7 @@ func (e *Editor) handleInsertMode(ev *tcell.EventKey) {
 	}
 
 	if k == tcell.KeyRune {
+		e.BufferChanged = true
 		e.handleInsertRune(r)
 		return
 	}
@@ -28,10 +29,12 @@ func (e *Editor) handleInsertMode(ev *tcell.EventKey) {
 func (e *Editor) handleNormalModeKey(k tcell.Key) {
 	switch k {
 	case tcell.KeyEnter:
+		e.BufferChanged = true
 		e.AddLine()
 	case tcell.KeyEsc:
-		e.Mode = Normal
+		e.ChangeMode(Normal)
 	case tcell.KeyBackspace, tcell.KeyBackspace2:
+		e.BufferChanged = true
 		e.RemoveChar()
 	}
 }

@@ -31,3 +31,17 @@ func (e *Editor) SetScrollY() {
 		e.ScrollY = min(e.CursorY-visibleLines+1, maxScroll)
 	}
 }
+
+func equalRunes(a, b []rune) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+
+	return true
+}
