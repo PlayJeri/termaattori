@@ -64,7 +64,9 @@ func (e *Editor) RemoveLine() {
 }
 
 func (e *Editor) AddLine() {
-	contentToShift := append([]rune(nil), e.Content[e.CursorY][e.CursorX:]...)
+	contentToShiftSlice := e.Content[e.CursorY][e.CursorX:]
+	contentToShift := make([]rune, len(contentToShiftSlice))
+	copy(contentToShift, contentToShiftSlice)
 	e.Content[e.CursorY] = append([]rune(nil), e.Content[e.CursorY][:e.CursorX]...)
 	e.Content = slices.Insert(e.Content, e.CursorY+1, contentToShift)
 	e.CursorX = 0
@@ -76,7 +78,10 @@ func (e *Editor) handleInsertRune(r rune) {
 		e.Content = append(e.Content, []rune{})
 	}
 	line := e.Content[e.CursorY]
-	line = append(line[:e.CursorX], append([]rune{r}, line[e.CursorX:]...)...)
+	// Efficiently insert a rune at CursorX using copy
+	line = append(line, 0) // grow the slice by one
+	copy(line[e.CursorX+1:], line[e.CursorX:])
+	line[e.CursorX] = r
 	e.Content[e.CursorY] = line
 	e.CursorX++
 }
